@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="GrowtopiaServer" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/GrowtopiaServer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g -lws2_32 -lwinmm" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/GrowtopiaServer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2 -lws2_32 -lwinmm" />
+				</Compiler>
+				<Linker>
+					<Add option="-s -lws2_32 -lwinmm" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall -lws2_32 -lwinmm" />
+			<Add option="-fexceptions -lws2_32 -lwinmm" />
+		</Compiler>
+		<Unit filename="enet server test/enet server test.cpp" />
+		<Unit filename="enet server test/enet/callbacks.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/compress.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/host.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/include/enet/callbacks.h" />
+		<Unit filename="enet server test/enet/include/enet/enet.h" />
+		<Unit filename="enet server test/enet/include/enet/list.h" />
+		<Unit filename="enet server test/enet/include/enet/protocol.h" />
+		<Unit filename="enet server test/enet/include/enet/time.h" />
+		<Unit filename="enet server test/enet/include/enet/types.h" />
+		<Unit filename="enet server test/enet/include/enet/unix.h" />
+		<Unit filename="enet server test/enet/include/enet/utility.h" />
+		<Unit filename="enet server test/enet/include/enet/win32.h" />
+		<Unit filename="enet server test/enet/list.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/packet.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/peer.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/protocol.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Unit filename="enet server test/enet/win32.c">
+			<Option compilerVar="CC" />
+			<Compiler>
+				<Add option="-lws2_32 -lwinmm" />
+			</Compiler>
+		</Unit>
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
