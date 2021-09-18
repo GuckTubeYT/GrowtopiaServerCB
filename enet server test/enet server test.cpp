@@ -1303,7 +1303,7 @@ void buildItemsDatabase()
 		memPos += 1;
 		tile.collisionType = data[memPos];
 		memPos += 1;
-		tile.breakHits = data[memPos] / 6;
+		tile.breakHits = (uint8_t)data[memPos] / 6;
 		memPos += 1;
 		memcpy(&tile.dropChance, data + memPos, 4);
 		memPos += 4;
