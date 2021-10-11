@@ -1,7 +1,7 @@
 # Growtopia Server ![Build Status](https://ci.appveyor.com/api/projects/status/github/GrowtopiaNoobs/GrowtopiaServer)
 First Growtopia Private Server made with ENet by GrowtopiaNoobs.
 
-This project has been compiled with Codeblocks
+This project has been compiled with Codeblocks (Link = https://sourceforge.net/projects/codeblocks/files/Binaries/20.03/Windows/codeblocks-20.03mingw-setup.exe)
 
 This project has been published under GNU AFFERO GPL license, so you need to **publish whole source code and citate orginal authors name, even if you are using your server as service**!
 
