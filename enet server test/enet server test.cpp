@@ -2756,8 +2756,8 @@ int main()
 		{
 			if (((PlayerInfo*)(peer->data))->isUpdating)
 			{
-				cout << "packet drop" << endl;
-				continue;
+				/*cout << "packet drop" << endl;
+				continue;*/
 			}
 
 			int messageType = GetMessageTypeFromPacket(event.packet);
