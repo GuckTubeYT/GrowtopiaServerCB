@@ -82,8 +82,8 @@ ulong _byteswap_ulong(ulong x)
 
 //configs
 int configPort = 17091;
-string configCDN = "0098/CDNContent77/cache/";
-
+string configCDN = "0098/08705/cache/";
+string configStatic = "ubistatic-a.akamaihd.net";
 
 /***bcrypt***/
 
@@ -2583,11 +2583,11 @@ void loadConfig() {
 		try {
 			configPort = j["port"].get<int>();
 			configCDN = j["cdn"].get<string>();
-
+			configStatic = j["static"].get<string>();
 			cout << "Config loaded." << endl;
 		} catch (...) {
 			cout << "Invalid Config, Fixing..." << endl;
-			string config_contents = "{ \"port\": 17091, \"cdn\": \"0098/310789/cache/\" }";
+			string config_contents = "{ \"port\": 17091, \"cdn\": \"0098/310789/cache/\", \"static\": \"ubistatic-a.akamaihd.net\" }";
 
 			ofstream myfile1;
 			myfile1.open("config.json");
@@ -2605,7 +2605,7 @@ void loadConfig() {
 		}
 	} else {
 		cout << "Config not found, Creating..." << endl;
-		string config_contents = "{ \"port\": 17091, \"cdn\": \"0098/310789/cache/\" }";
+		string config_contents = "{ \"port\": 17091, \"cdn\": \"0098/310789/cache/\", \"static\": \"ubistatic-a.akamaihd.net\" }";
 
 		ofstream myfile1;
 		myfile1.open("config.json");
@@ -3633,10 +3633,10 @@ int main()
 					gamepacket_t p;
 					p.Insert("OnSuperMainStartAcceptLogonHrdxs47254722215a");
 					p.Insert(itemdathash);
-					p.Insert("ubistatic-a.akamaihd.net");
+					p.Insert(configStatic);
 					p.Insert(configCDN);
 					p.Insert("cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster");
-					p.Insert("proto=145|choosemusic=audio/mp3/theme3.mp3|active_holiday=7|wing_week_day=0|server_tick=8499898|clash_active=1|drop_lavacheck_faster=1|isPayingUser=0|usingStoreNavigation=1|enableInventoryTab=1|bigBackpack=1|");
+					p.Insert("proto=146|choosemusic=audio/mp3/about_theme.mp3|active_holiday=16|wing_week_day=4|server_tick=85268792|clash_active=0|drop_lavacheck_faster=1|isPayingUser=0|usingStoreNavigation=1|enableInventoryTab=1|bigBackpack=1|");
 					p.CreatePacket(peer);
 
 					std::stringstream ss(GetTextPointerFromPacket(event.packet));
