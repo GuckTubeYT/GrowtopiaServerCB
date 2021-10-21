@@ -82,7 +82,7 @@ ulong _byteswap_ulong(ulong x)
 
 //configs
 int configPort = 17091;
-string configCDN = "0098/08705/cache/";
+string configCDN = "0098/24450/cache/";
 string configStatic = "ubistatic-a.akamaihd.net";
 
 /***bcrypt***/
@@ -3636,7 +3636,7 @@ int main()
 					p.Insert(configStatic);
 					p.Insert(configCDN);
 					p.Insert("cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster");
-					p.Insert("proto=146|choosemusic=audio/mp3/about_theme.mp3|active_holiday=16|wing_week_day=4|server_tick=85268792|clash_active=0|drop_lavacheck_faster=1|isPayingUser=0|usingStoreNavigation=1|enableInventoryTab=1|bigBackpack=1|");
+					p.Insert("proto=147|choosemusic=audio/mp3/ykoops.mp3|active_holiday=8|wing_week_day=0|server_tick=695770|clash_active=1|drop_lavacheck_faster=1|isPayingUser=0|usingStoreNavigation=1|enableInventoryTab=1|bigBackpack=1|");
 					p.CreatePacket(peer);
 
 					std::stringstream ss(GetTextPointerFromPacket(event.packet));
