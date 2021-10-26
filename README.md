@@ -13,8 +13,7 @@ This project has been published under GNU AFFERO GPL license, so you need to **p
 5. Extend data which are saved now - there should be saved current clothes, inventory, login time, register time and maybe tracing hashes if you want to do proper ban system also in worlds there should be saved block extras (enabled, water, fire, etc.) and dropped items
 6. Write event pool - this is needed to make delayed actions like respawning
 7. Make heavy events asynchronous with possibly some good thread count (probably one or two) and connect them to event pool or use callbacks
-8. Daily news (Growtopia Gazzete) should be saved to external file and not in source for easier modifying
-9. Disable all loging to console and log everything to file, this will free up console for CLI
+8. Disable all loging to console and log everything to file, this will free up console for CLI
 
 If you want to support development of this server, then make sure you contribute to this repo!
 
