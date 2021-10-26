@@ -2636,6 +2636,19 @@ string randomDuctTapeMessage (size_t length) {
     std::generate_n(str.begin(), length, randchar );
     return str;
 }
+
+void loadNews() {
+    ifstream ifs("news.txt");
+    if (!ifs.is_open()) {
+        cout << "news.txt not found, creating news.txt" << endl;
+        ofstream ofs("news.txt");
+        ofs << newslist;
+        cout << "news.txt has been created!" << endl;
+        ofs.close();
+    } else newslist.assign((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+    ifs.close();
+}
+
 	/*
 	action|log
 msg|`4UPDATE REQUIRED!`` : The `$V2.981`` update is now available for your device.  Go get it!  You'll need to install it before you can play online.
@@ -2650,7 +2663,9 @@ int main()
 
 	cout << "Loading config from config.json" << endl;
 	loadConfig();
-
+	cout << "Load news from news.txt" << endl;
+	loadNews();
+	cout << "News has been loaded!" << endl;
 	enet_initialize();
 	//Unnecessary save at exit. Commented out to make the program exit slightly quicker.
 	/*if (atexit(saveAllWorlds)) {
