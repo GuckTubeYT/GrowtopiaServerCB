@@ -16,6 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **********************************************************************************/
 
+/*
+
+GuckTube Pro
+
+*/
+
 #include <iostream>
 
 #include "enet/include/enet/enet.h"
@@ -389,6 +395,117 @@ public:
 	}
 };
 
+struct GamePacket {
+	BYTE* data;
+	int len;
+	int indexes;
+};
+GamePacket appendFloat(GamePacket p, float val) {
+	BYTE* n = new BYTE[p.len + 2 + 4];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	n[p.len] = p.indexes;
+	n[p.len + 1] = 1;
+	memcpy(n + p.len + 2, &val, 4);
+	p.len = p.len + 2 + 4;
+	p.indexes++;
+	return p;
+}
+GamePacket appendFloat(GamePacket p, float val, float val2) {
+	BYTE* n = new BYTE[p.len + 2 + 8];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	n[p.len] = p.indexes;
+	n[p.len + 1] = 3;
+	memcpy(n + p.len + 2, &val, 4);
+	memcpy(n + p.len + 6, &val2, 4);
+	p.len = p.len + 2 + 8;
+	p.indexes++;
+	return p;
+}
+GamePacket appendFloat(GamePacket p, float val, float val2, float val3) {
+	BYTE* n = new BYTE[p.len + 2 + 12];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	n[p.len] = p.indexes;
+	n[p.len + 1] = 4;
+	memcpy(n + p.len + 2, &val, 4);
+	memcpy(n + p.len + 6, &val2, 4);
+	memcpy(n + p.len + 10, &val3, 4);
+	p.len = p.len + 2 + 12;
+	p.indexes++;
+	return p;
+}
+GamePacket appendInt(GamePacket p, int val) {
+	BYTE* n = new BYTE[p.len + 2 + 4];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	n[p.len] = p.indexes;
+	n[p.len + 1] = 9;
+	memcpy(n + p.len + 2, &val, 4);
+	p.len = p.len + 2 + 4;
+	p.indexes++;
+	return p;
+}
+GamePacket appendIntx(GamePacket p, int val) {
+	BYTE* n = new BYTE[p.len + 2 + 4];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	n[p.len] = p.indexes;
+	n[p.len + 1] = 5;
+	memcpy(n + p.len + 2, &val, 4);
+	p.len = p.len + 2 + 4;
+	p.indexes++;
+	return p;
+}
+GamePacket appendString(GamePacket p, string str) {
+	BYTE* n = new BYTE[p.len + 2 + str.length() + 4];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	n[p.len] = p.indexes;
+	n[p.len + 1] = 2;
+	int sLen = str.length();
+	memcpy(n + p.len + 2, &sLen, 4);
+	memcpy(n + p.len + 6, str.c_str(), sLen);
+	p.len = p.len + 2 + str.length() + 4;
+	p.indexes++;
+	return p;
+}
+GamePacket createPacket() {
+	BYTE* data = new BYTE[61];
+	string asdf = "0400000001000000FFFFFFFF00000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	for (int i = 0; i < asdf.length(); i += 2) {
+		char x = ch2n(asdf[i]);
+		x = x << 4;
+		x += ch2n(asdf[i + 1]);
+		memcpy(data + (i / 2), &x, 1);
+		if (asdf.length() > 61 * 2) throw 0;
+	}
+	GamePacket packet;
+	packet.data = data;
+	packet.len = 61;
+	packet.indexes = 0;
+	return packet;
+}
+GamePacket packetEnd(GamePacket p) {
+	BYTE* n = new BYTE[p.len + 1];
+	memcpy(n, p.data, p.len);
+	delete p.data;
+	p.data = n;
+	char zero = 0;
+	memcpy(p.data + p.len, &zero, 1);
+	p.len += 1;
+	*(int*)(p.data + 56) = p.indexes;
+	*(BYTE*)(p.data + 60) = p.indexes;
+	return p;
+}
+
 struct ItemSharedUID {
 	int actual_uid = 1;
 	int shared_uid = 1;
@@ -436,6 +553,10 @@ struct PlayerInfo {
 	string charIP = "";
 	bool isUpdating = false;
 	bool joinClothesUpdated = false;
+	
+	bool gamestatusonline = true;
+	bool gamestatusaway = false;
+	bool gamestatusbusy = false;
 
 	bool hasLogon = false;
 
@@ -664,7 +785,7 @@ int PlayerDB::playerLogin(ENetPeer* peer, string username, string password) {
 			bool found = false;
 			for (int i = 0; i < admins.size(); i++) {
 				if (admins[i].username == username) {
-				found = true;
+					found = true;
 				}
 			}
 			if (!found) {//not in vector
@@ -784,6 +905,49 @@ namespace packet {
 		gamepacket_t p;
 		p.Insert("OnSpawn");
 		p.Insert(message);
+		p.CreatePacket(peer);
+	}
+	void notification(ENetPeer* peer, string text, string audiosound, string interfaceimage) {
+		gamepacket_t p;
+		p.Insert("OnAddNotification");
+		p.Insert("interface/atomic_button.rttex");
+		p.Insert(text);
+		p.Insert("audio/hub_open.wav");
+		p.Insert(0);
+		p.CreatePacket(peer);
+	}
+	void failedtoenterworld(ENetPeer* peer) {
+		gamepacket_t p;
+		p.Insert("OnFailedToEnterWorld");
+		p.Inster(1);
+		p.CreatePacket(peer);
+	}
+	/*
+	if OnFailedToEnterWorld not working delete;
+	
+	void failedtoenterworld(ENetPeer* peer) {
+		gamepacket_t p;
+		p.Insert("OnFailedToEnterWorld");
+		p.Inster(1);
+		p.CreatePacket(peer);
+	}
+	
+	paste;
+	
+	void OnFailedToEnterWorld(ENetPeer* peer) {
+		GamePacket p = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+		ENetPacket* packet = enet_packet_create(p.data,
+			p.len,
+			ENET_PACKET_FLAG_RELIABLE);
+		enet_peer_send(peer, 0, packet);
+		delete p.data;
+	}
+	
+	*/
+	void ontextoverlay(ENetPeer* peer, string text) {
+		gamepacket_t p;
+		p.Insert("OnTextOverlay");
+		p.Insert(text);
 		p.CreatePacket(peer);
 	}
 	void requestworldselectmenu(ENetPeer* peer, string message) {
@@ -2205,6 +2369,8 @@ void loadnews() {
 				name = ((PlayerInfo*)(currentPeer->data))->displayName;
 
 		}
+		if (((PlayerInfo*)(currentPeer->data))->adminLevel = 0)
+		{
 		gamepacket_t p;
 		p.Insert("OnConsoleMessage");
 		p.Insert("CP:0_PL:4_OID:_CT:[W]_ `o<`w" + name + "`o> " + message);
@@ -2225,7 +2391,31 @@ void loadnews() {
 				p2.CreatePacket(currentPeer);
 			}
 		}
+	}	
+		if (((PlayerInfo*)(currentPeer->data))->adminLevel => 16)
+		{
+		gamepacket_t p;
+		p.Insert("OnConsoleMessage");
+		p.Insert("CP:0_PL:4_OID:_CT:[W]_ `o<`w" + name + "`o> `5" + message);
+		gamepacket_t p2;
+		p2.Insert("OnTalkBubble");
+		p2.Insert(netID);
+		p2.Insert("`5" + message);
+		p2.Insert(0);
+		for (currentPeer = server->peers;
+			currentPeer < &server->peers[server->peerCount];
+			++currentPeer)
+		{
+			if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+				continue;
+			if (isHere(peer, currentPeer))
+			{
+				p.CreatePacket(currentPeer);
+				p2.CreatePacket(currentPeer);
+			}
+		}
 	}
+}
 
 	void sendWho(ENetPeer* peer)
 	{
@@ -2941,7 +3131,12 @@ int main()
 				}
 				if (cch.find("action|store") == 0)
 				{
+					if (((PlayerInfo*)(currentPeer->data))->haveGrowId = true)
+					{		
 					packet::storerequest(peer, "set_description_text|Welcome to the `2Growtopia Store``!  Tap the item you'd like more info on.`o  `wWant to get `5Supporter`` status? Any Gem purchase (or `57,000`` Gems earned with free `5Tapjoy`` offers) will make you one. You'll get new skin colors, the `5Recycle`` tool to convert unwanted items into Gems, and more bonuses!\nadd_button|iap_menu|Buy Gems|interface/large/store_buttons5.rttex||0|2|0|0||\nadd_button|subs_menu|Subscriptions|interface/large/store_buttons22.rttex||0|1|0|0||\nadd_button|token_menu|Growtoken Items|interface/large/store_buttons9.rttex||0|0|0|0||\nadd_button|pristine_forceps|`oAnomalizing Pristine Bonesaw``|interface/large/store_buttons20.rttex|Built to exacting specifications by GrowTech engineers to find and remove temporal anomalies from infected patients, and with even more power than Delicate versions! Note : The fragile anomaly - seeking circuitry in these devices is prone to failure and may break (though with less of a chance than a Delicate version)! Use with care!|0|3|3500|0||\nadd_button|itemomonth|`oItem Of The Month``|interface/large/store_buttons16.rttex|`2September 2018:`` `9Sorcerer's Tunic of Mystery!`` Capable of reflecting the true colors of the world around it, this rare tunic is made of captured starlight and aether. If you think knitting with thread is hard, just try doing it with moonbeams and magic! The result is worth it though, as these clothes won't just make you look amazing - you'll be able to channel their inherent power into blasts of cosmic energy!``|0|3|200000|0||\nadd_button|contact_lenses|`oContact Lens Pack``|interface/large/store_buttons22.rttex|Need a colorful new look? This pack includes 10 random Contact Lens colors (and may include Contact Lens Cleaning Solution, to return to your natural eye color)!|0|7|15000|0||\nadd_button|locks_menu|Locks And Stuff|interface/large/store_buttons3.rttex||0|4|0|0||\nadd_button|itempack_menu|Item Packs|interface/large/store_buttons3.rttex||0|3|0|0||\nadd_button|bigitems_menu|Awesome Items|interface/large/store_buttons4.rttex||0|6|0|0||\nadd_button|weather_menu|Weather Machines|interface/large/store_buttons5.rttex|Tired of the same sunny sky?  We offer alternatives within...|0|4|0|0||\n");
+					} else {
+					packet::dialog(peer, "set_default_color|`o\n\nadd_label_with_icon|big|`wGet a GrowID``|left|206|\n\nadd_spacer|small|\nadd_textbox|A `wGrowID `wmeans `oyou can use a name and password to logon from any device.|\nadd_spacer|small|\nadd_textbox|This `wname `owill be reserved for you and `wshown to other players`o, so choose carefully!|\nadd_text_input|username|GrowID||30|\nadd_text_input|password|Password||100|\nadd_text_input|passwordverify|Password Verify||100|\nadd_textbox|Your `wemail address `owill only be used for account verification purposes and won't be spammed or shared. If you use a fake email, you'll never be able to recover or change your password.|\nadd_text_input|email|Email||100|\nadd_textbox|Your `wDiscord ID `owill be used for secondary verification if you lost access to your `wemail address`o! Please enter in such format: `wdiscordname#tag`o. Your `wDiscord Tag `ocan be found in your `wDiscord account settings`o.|\nadd_text_input|discord|Discord||100|\nend_dialog|register|Cancel|Get My GrowID!|\n");
+					}
 				}
 				if (cch.find("action|info") == 0)
 				{
@@ -3136,7 +3331,7 @@ int main()
 							if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
 								continue;
 
-							if (getAdminLevel(((PlayerInfo*)(currentPeer->data))->rawName, ((PlayerInfo*)(currentPeer->data))->tankIDPass) > 0) {
+							if (getAdminLevel(((PlayerInfo*)(currentPeer->data))->rawName, ((PlayerInfo*)(currentPeer->data))->tankIDPass) > 15) {
 								x.append("`#@" + ((PlayerInfo*)(currentPeer->data))->rawName + "``, ");
 							}
 
@@ -3679,17 +3874,90 @@ int main()
 					}
 					if (!((PlayerInfo*)(event.peer->data))->haveGrowId)
 					{
+						int randomnumber = rand() % 999;
 						((PlayerInfo*)(event.peer->data))->hasLogon = true;
 						((PlayerInfo*)(event.peer->data))->rawName = "";
-						((PlayerInfo*)(event.peer->data))->displayName = "Fake " + PlayerDB::fixColors(((PlayerInfo*)(event.peer->data))->requestedName.substr(0, ((PlayerInfo*)(event.peer->data))->requestedName.length()>15?15:((PlayerInfo*)(event.peer->data))->requestedName.length()));
+						((PlayerInfo*)(event.peer->data))->displayName = "`w[`4Not Registered`w] " + PlayerDB::fixColors(((PlayerInfo*)(event.peer->data))->requestedName.substr(0, ((PlayerInfo*)(event.peer->data))->requestedName.length() > 15 ? 15 : ((PlayerInfo*)(event.peer->data))->requestedName.length()) + "_" + to_string(randomnumber));
 					}
 					else {
 						((PlayerInfo*)(event.peer->data))->rawName = PlayerDB::getProperName(((PlayerInfo*)(event.peer->data))->tankIDName);
 #ifdef REGISTRATION
 						int logStatus = PlayerDB::playerLogin(peer, ((PlayerInfo*)(event.peer->data))->rawName, ((PlayerInfo*)(event.peer->data))->tankIDPass);
 						if (logStatus == 1) {
-							packet::consolemessage(peer, "`rYou have successfully logged into your account!``");
+							PlayerInfo* p = ((PlayerInfo*)(peer->data));
+								std::ifstream ifff("players/" + PlayerDB::getProperName(p->rawName) + ".json");
+								json j;
+								ifff >> j;
+
+								int adminLevel;
+								int xp;
+								int level;
+								int premwl;
+								int back;
+								int hand;
+								int shirt;
+								int pants;
+								int neck;
+								int hair;
+								int feet;
+								int mask;
+								int ances;
+								int face;
+								adminLevel = j["adminLevel"];
+								level = j["level"];
+								xp = j["xp"];
+								back = j["ClothBack"];
+								face = j["ClothFace"];
+								hand = j["ClothHand"];
+								shirt = j["ClothShirt"];
+								pants = j["ClothPants"];
+								premwl = j["premwl"];
+								neck = j["ClothNeck"];
+								hair = j["ClothHair"];
+								feet = j["ClothFeet"];
+								mask = j["ClothMask"];
+								ances = j["ClothAnces"];
+								
+								p->adminLevel = adminLevel;
+								p->level = level;
+								p->xp = xp;
+								p->premwl = premwl;
+								p->cloth_back = back;
+								p->cloth_hand = hand;
+								p->cloth_face = face;
+								p->cloth_hair = hair;
+								p->cloth_feet = feet;
+								p->cloth_pants = pants;
+								p->cloth_necklace = neck;
+								p->cloth_shirt = shirt;
+								p->cloth_mask = mask;
+								p->cloth_ances = ances;
+
+								updateAllClothes(peer);
+
+								ifff.close();
+																
+							packet::consolemessage(peer, "`2You have successfully logged into your account `w(`5" + (((PlayerInfo*)(event.peer->data))->displayName) +"`w)!");
+							// i did it because bored
 							((PlayerInfo*)(event.peer->data))->displayName = ((PlayerInfo*)(event.peer->data))->tankIDName;
+							if (((PlayerInfo*)(peer->data))->adminLevel == 20) {
+									((PlayerInfo*)(event.peer->data))->displayName = "`w[`6GrowtopiaNoobs`w]`6@" + ((PlayerInfo*)(event.peer->data))->tankIDName;
+								}
+								else if (((PlayerInfo*)(peer->data))->adminLevel == 19) {
+									((PlayerInfo*)(event.peer->data))->displayName = "`w[`bBest`w]" + ((PlayerInfo*)(event.peer->data))->tankIDName;
+								}
+								else if (((PlayerInfo*)(peer->data))->adminLevel == 18) {
+									((PlayerInfo*)(event.peer->data))->displayName = "`w[`4Source`w]" + ((PlayerInfo*)(event.peer->data))->tankIDName;
+								}
+								else if (((PlayerInfo*)(peer->data))->adminLevel == 17) {
+									((PlayerInfo*)(event.peer->data))->displayName = "`6@" + ((PlayerInfo*)(event.peer->data))->tankIDName;
+								}
+								else if (((PlayerInfo*)(peer->data))->adminLevel == 16) {
+									((PlayerInfo*)(event.peer->data))->displayName = "`#@" + ((PlayerInfo*)(event.peer->data))->tankIDName;
+								}
+								else {
+									((PlayerInfo*)(event.peer->data))->displayName = ((PlayerInfo*)(event.peer->data))->tankIDName;
+								}
 						}
 						else {
 							packet::consolemessage(peer, "`rWrong username or password!``");
