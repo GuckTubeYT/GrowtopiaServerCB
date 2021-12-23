@@ -16,12 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **********************************************************************************/
 
-/*
-
-GuckTube Pro
-
-*/
-
 #include <iostream>
 
 #include "enet/include/enet/enet.h"
