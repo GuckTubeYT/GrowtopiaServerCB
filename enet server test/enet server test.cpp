@@ -1289,7 +1289,7 @@ void buildItemsDatabase()
 		}
 		memcpy(&tile.textureHash, data + memPos, 4);
 		memPos += 4;
-		tile.itemKind = memPos[data];
+		tile.itemKind = data[memPos];
 		memPos += 1;
 		memcpy(&tile.val1, data + memPos, 4);
 		memPos += 4;
