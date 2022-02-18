@@ -2666,6 +2666,8 @@ int main()
 	cout << "Load news from news.txt" << endl;
 	loadNews();
 	cout << "News has been loaded!" << endl;
+	system("mkdir players");
+    	system("mkdir worlds");
 	enet_initialize();
 	//Unnecessary save at exit. Commented out to make the program exit slightly quicker.
 	/*if (atexit(saveAllWorlds)) {
