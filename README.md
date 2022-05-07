@@ -32,4 +32,4 @@ This project has been published under GNU AFFERO GPL license, so you need to **p
 # Support
 If you want to support development of this server, then make sure you contribute to this repo!
 
-Make that sure that you subscribe my channel https://www.youtube.com/channel/UCLXtuoBlrXFDRtFU8vPy35g and enjoy :+1:
+Make that sure that you subscribe GrowtopiaNoobs channel https://www.youtube.com/channel/UCLXtuoBlrXFDRtFU8vPy35g and enjoy :+1:
