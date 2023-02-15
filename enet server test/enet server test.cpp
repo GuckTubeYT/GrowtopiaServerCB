@@ -58,6 +58,7 @@ typedef unsigned char byte;
 typedef unsigned char __int8;
 typedef unsigned short __int16;
 typedef unsigned int DWORD;
+typedef unsigned long ulong;
 #endif
 ENetHost * server;
 int cId = 1;
